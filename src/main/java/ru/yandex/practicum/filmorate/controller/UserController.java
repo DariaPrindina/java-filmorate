@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,12 +21,14 @@ public class UserController {
 
     @GetMapping
     public List<User> getAll() {
+        log.info("Получение списка всех пользователей");
         return new ArrayList<>(users.values());
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         validate(user);
+        setDisplayName(user);
         user.setId(nextId++);
         users.put(user.getId(), user);
         log.info("Создан пользователь: {}", user);
@@ -41,6 +42,7 @@ public class UserController {
             throw new NotFoundException("Пользователь с указанным id не найден");
         }
         validate(user);
+        setDisplayName(user);
         users.put(user.getId(), user);
         log.info("Обновлён пользователь: {}", user);
         return user;
@@ -51,10 +53,9 @@ public class UserController {
             log.warn("Логин содержит пробелы: {}", user.getLogin());
             throw new ValidationException("Логин не может содержать пробелы");
         }
-        if (user.getBirthday() != null && user.getBirthday().isAfter(LocalDate.now())) {
-            log.warn("Дата рождения в будущем: {}", user.getBirthday());
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
+    }
+
+    private void setDisplayName(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }

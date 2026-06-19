@@ -84,13 +84,23 @@ class UserValidationTest {
     void futureBirthdayFails() {
         User user = validUser();
         user.setBirthday(LocalDate.now().plusDays(1));
-        assertThrows(ValidationException.class, () -> controller.create(user));
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertFalse(violations.isEmpty());
     }
 
     @Test
-    void todayBirthdayOk() {
+    void todayBirthdayFails() {
         User user = validUser();
         user.setBirthday(LocalDate.now());
-        assertDoesNotThrow(() -> controller.create(user));
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    void pastBirthdayOk() {
+        User user = validUser();
+        user.setBirthday(LocalDate.now().minusDays(1));
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertTrue(violations.isEmpty());
     }
 }
