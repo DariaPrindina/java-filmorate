@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -35,15 +34,11 @@ public class UserController {
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        validate(user);
-        setDisplayName(user);
         return userService.add(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        validate(user);
-        setDisplayName(user);
         return userService.update(user);
     }
 
@@ -69,18 +64,5 @@ public class UserController {
     public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
         log.info("Получение общих друзей пользователей id={} и id={}", id, otherId);
         return userService.getCommonFriends(id, otherId);
-    }
-
-    private void validate(User user) {
-        if (user.getLogin().contains(" ")) {
-            log.warn("Логин содержит пробелы: {}", user.getLogin());
-            throw new ValidationException("Логин не может содержать пробелы");
-        }
-    }
-
-    private void setDisplayName(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
     }
 }

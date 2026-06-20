@@ -24,5 +24,5 @@ public class Film {
     @Positive(message = "Продолжительность фильма должна быть положительным числом")
     private Integer duration;
 
-    private final Set<Integer> likes = new HashSet<>();
+    private final Set<Long> likes = new HashSet<>();
 }
