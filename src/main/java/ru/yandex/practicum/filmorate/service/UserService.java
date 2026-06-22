@@ -43,6 +43,9 @@ public class UserService {
     }
 
     public void addFriend(int userId, int friendId) {
+        if (userId == friendId) {
+            throw new ValidationException("Нельзя добавить самого себя в друзья");
+        }
         User user = findByIdOrThrow(userId);
         User friend = findByIdOrThrow(friendId);
         user.getFriends().add((long) friendId);
@@ -51,6 +54,9 @@ public class UserService {
     }
 
     public void removeFriend(int userId, int friendId) {
+        if (userId == friendId) {
+            throw new ValidationException("Нельзя удалить самого себя из друзей");
+        }
         User user = findByIdOrThrow(userId);
         User friend = findByIdOrThrow(friendId);
         user.getFriends().remove((long) friendId);
@@ -66,6 +72,9 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(int userId, int otherId) {
+        if (userId == otherId) {
+            throw new ValidationException("Идентификаторы пользователей должны быть разными");
+        }
         User user = findByIdOrThrow(userId);
         User other = findByIdOrThrow(otherId);
         return user.getFriends().stream()
